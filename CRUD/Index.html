@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+  <head lang="en">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.0.2/dist/sweetalert2.min.css">  
+  </head>
+  <body>
+    <div id="app">
+      <v-app>
+        <v-main>
+          <v-card
+            class="mx-auto mt-5"
+            color="transparente"
+            max-width="1280"
+            elevation="0"
+          >
+            <v-btn class="mx-2" fab dark color="#e040fb" @click="formNuevo()">
+              <v-icon>mdi-plus</v-icon>
+            </v-btn>
+            <v-simple-table class="mt-5">
+            <template v-slot:default>
+              <thead >
+                <tr class="purple darken-2">
+                  <th class="white--text">Codigo</th>
+                  <th class="white--text">Nombre</th>
+                  <th class="white--text">Apellido</th>
+                  <th class="white--text">Telefono</th>
+                  <th class="white--text">Email</th>
+                  <th class="white--text">Tipo Documento</th>
+                  <th class="white--text">Documento</th>
+                  <th class="white--text">Fecha Nacimiento</th>
+                  <th class="white--text">Edad</th>
+                  <th class="white--text">Eliminar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="propietario in propietarios"
+                  :key="propietario.propCod"
+                  @dblclick="formEditar(propietario.propCod,propietario.propTelefono,propietario.propNombre,propietario.propApellido,propietario.propEmail,propietario.propTipoDocumento,propietario.propDocumento,propietario.propFechaNac,propietario.propEdad)"
+                >
+                  <td>{{propietario.propCod}}</td>
+                  <td>{{propietario.propNombre}}</td>
+                  <td>{{propietario.propApellido}}</td>
+                  <td>{{propietario.propTelefono}}</td>
+                  <td>{{propietario.propEmail}}</td>
+                  <td>{{propietario.propTipoDocumento}}</td>
+                  <td>{{propietario.propDocumento}}</td>
+                  <td>{{propietario.propFechaNac.split('T')[0]}}</td>
+                  <td>{{propietario.propEdad}}</td>
+                  <td>
+                    <v-btn
+                      class="error"
+                      dark
+                      small
+                      fab
+                      @click="borrar(propietario.propCod)"
+                      ><v-icon>mdi-delete</v-icon></v-btn
+                    >
+                  </td>
+                </tr>
+              </tbody></template>
+            </v-simple-table>
+          </v-card>
+          <!--Compo Crear y editar-->
+          <v-dialog v-model="dialog" max-width="500">
+            <v-card>
+              <v-card-title class="purple darken-4 white--text">Propietario</v-card-title>
+              <v-card-text>
+                <v-form>
+                  <v-container>
+                    <v-row>
+                      <input v-model="propietario.propCod" hidden> </input>
+                      <v-col cols="12" md="12">
+                        <v-text-field v-model="propietario.propCod" label="ID" solo requiered>{{propietario.propCod}}</v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-text-field v-model="propietario.propNombre" label="Nombre" solo requiered>{{propietario.propNombre}}</v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-text-field v-model="propietario.propApellido" label="Apellido" solo required>{{propietario.propApellido}}</v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-text-field v-model="propietario.propEmail" label="Email" solo required>{{propietario.propEmail}}</v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-text-field v-model="propietario.propTelefono" label="Telefono" solo required>{{propietario.propTelefono}}</v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-text-field v-model="propietario.propTipoDocumento" label="Tipo Documento" solo required>{{propietario.propTipoDocumento}}</v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-text-field v-model="propietario.propDocumento" label="Documento" solo required>{{propietario.propDocumento}}</v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-text-field v-model="propietario.propFechaNac" label="Fecha Nacimiento"  type="date" solo required >{{this.propietario.propFechaNac.split('T')[0]}}</v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-text-field v-model="propietario.propEdad" label="Edad" type="number" solo required>{{propietario.propEdad}}</v-text-field>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn @click="dialog=false" color="blue-grey" dark>Cancelar</v-btn>
+                <v-btn @click="guardar()" type="submit" color="purple accent-3" dark>Guardar</v-btn>
+              </v-card-actions>
+            </v-form> 
+            </v-card>
+            </v-dialog>
+        </v-main>
+      </v-app>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.js" integrity="sha512-nqIFZC8560+CqHgXKez61MI0f9XSTKLkm0zFVm/99Wt0jSTZ7yeeYwbzyl0SGn/s8Mulbdw+ScCG41hmO2+FKw==" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.0.2/dist/sweetalert2.all.min.js"></script>
+    <script>
+      let url='http://localhost:3000/api/propietarios/';
+    new Vue ({
+      el: "#app",
+      vuetify: new Vuetify(),
+      data(){
+        return{
+          propietarios:[],
+          dialog: false,
+          operacion:'',
+          contador:0,
+          propietario: {
+            propCod: '',
+            propTelefono:'',
+            propTipoDocumento:'',
+            propDocumento:'',
+            propNombre:'',
+            propApellido:'',
+            propEmail:'',
+            propFechaNac:'',
+            propEdad:null
+          }
+        }
+      },
+      created(){
+        this.mostrar()
+      },
+      methods:{
+        mostrar(){
+          axios.get(url).then(response=>{
+            this.propietarios=response.data;
+          });
+        },
+        crear(){
+          let parametros = {propCod:this.propietario.propCod, propTelefono:this.propietario.propTelefono, propTipoDocumento:this.propietario.propTipoDocumento, propDocumento:this.propietario.propDocumento, propNombre:this.propietario.propNombre, propApellido:this.propietario.propApellido, propEmail:this.propietario.propEmail, propFechaNac:this.propietario.propFechaNac.split('T')[0], propEdad:this.propietario.propEdad}
+          axios.post(url, parametros).then(response=>{
+            this.mostrar()
+          })
+          this.propietario.propCod = null;
+          this.propietario.propTelefono=''
+          this.propietario.propTipoDocumento=''
+          this.propietario.propDocumento=''
+          this.propietario.propNombre=''
+          this.propietario.propApellido=''
+          this.propietario.propEmail=''
+          this.propietario.propFechaNac=''
+          this.propietario.propEdad=null
+        },
+        editar(){
+          let parametros = {propTelefono:this.propietario.propTelefono, propTipoDocumento:this.propietario.propTipoDocumento, propDocumento:this.propietario.propDocumento, propNombre:this.propietario.propNombre, propApellido:this.propietario.propApellido, propEmail:this.propietario.propEmail, propFechaNac:this.propietario.propFechaNac, propEdad:this.propietario.propEdad, propCod:this.propietario.propCod}
+
+          axios.put(url+this.propietario.propCod, parametros).then(response=>{
+            this.mostrar()
+          })
+        },
+        borrar(propCod){
+          Swal.fire({
+            title:'¿Confirmar la eliminacion del registro?',
+            confirmButtonText:'Confirm',
+            showCancelButton:true
+          }).then((result)=>{
+            if(result.isConfirmed){
+              axios.delete(url+propCod).then(response=>{
+              this.mostrar();
+            });
+            Swal.fire('Eliminado','','success')
+            }else if(result.isDenied){
+              
+            }
+          });
+        },
+        guardar(){
+          if(!isNaN(this.propietario.propCod) || !isNaN(this.propietario.propTelefono || !isNaN(this.propietario.propTipoDocumento) || !isNaN(this.propietario.propDocumento) || !isNaN(this.propietario.propNombre) || !isNaN(this.propietario.propApellido || !isNaN(this.propietario.propEmail) || !isNaN(this.propietario.propFechaNac) || !isNaN(this.propietario.propEdad)))){
+            if(this.operacion == "crear"){
+              this.crear()
+            }
+            if(this.operacion == "editar"){
+              this.editar()
+            }
+          }
+          
+          this.dialog=false;
+        },
+        formNuevo(){
+          this.dialog = true;
+          this.operacion = "crear";
+          this.propietario.propCod = null;
+          this.propietario.propTelefono=''
+          this.propietario.propTipoDocumento=''
+          this.propietario.propDocumento=''
+          this.propietario.propNombre=''
+          this.propietario.propApellido=''
+          this.propietario.propEmail=''
+          this.propietario.propFechaNac=''
+          this.propietario.propEdad=null
+        },
+        formEditar(propCod, propTelefono,propTipoDocumento,propDocumento,propNombre,propApellido,propEmail,propFechaNac,propEdad){
+          this.propietario.propCod = propCod;
+          this.propietario.propTelefono=propTelefono;
+          this.propietario.propTipoDocumento=propTipoDocumento;
+          this.propietario.propDocumento=propDocumento;
+          this.propietario.propNombre=propNombre;
+          this.propietario.propApellido=propApellido;
+          this.propietario.propEmail=propEmail;
+          this.propietario.propFechaNac=propFechaNac.split('T')[0];
+          this.propietario.propEdad=propEdad;
+          this.dialog=true;
+          this.operacion="editar";
+        }
+      },
+
+
+    })
+    </script>
+  </body>
+</html>
